@@ -35,9 +35,9 @@ This app uses CSV for data storage and provides a basic command-line interface (
 ## 📁 Project Structure
 
 ```
-finance_tracker/
+personal_finance_tracker/
 │
-├── finance_tracker.py        # Main application file
+├── personal_finance_tracker.py        # Main application file
 ├── data_entry.py             # User input validation functions
 ├── finance_data.csv          # CSV file to store transactions
 └── README.md                 # Project documentation
@@ -50,8 +50,8 @@ finance_tracker/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/finance_tracker.git
-cd finance_tracker
+git clone https://github.com/AustinMusuya/personal_finance_tracker.git
+cd personal_finance_tracker
 ```
 
 ### 2. Install Dependencies
@@ -65,7 +65,7 @@ pip install requirements.txt
 ### 3. Run the Application
 
 ```bash
-python finance_tracker.py
+python personal_finance_tracker.py
 ```
 
 ---
