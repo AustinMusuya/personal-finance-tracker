@@ -65,7 +65,7 @@ pip install requirements.txt
 ### 3. Run the Application
 
 ```bash
-python personal_finance_tracker.py
+python main.py
 ```
 
 ---
