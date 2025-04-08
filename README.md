@@ -5,7 +5,6 @@ This is a simple **Personal Finance Tracker** built using Python. It allows user
 - Record income and expense transactions.
 - View summaries within a selected date range.
 - Visualize financial trends over time using line plots.
-- Upload financial data to **Azure Lakehouse** for advanced analysis and reporting.
 
 This app uses **CSV** for data storage and provides a basic command-line interface (CLI).
 
@@ -21,7 +20,6 @@ This app uses **CSV** for data storage and provides a basic command-line interfa
   - Net Savings
 - ✅ Line plot visualization of income and expense over time
 - ✅ Stores data in a CSV file for easy access and portability
-- ✅ Uploads financial data to **Azure Lakehouse** for advanced analysis
 
 ---
 
@@ -31,7 +29,6 @@ This app uses **CSV** for data storage and provides a basic command-line interfa
 - **Pandas** for data manipulation
 - **Matplotlib** for visualization
 - **CSV** module for file handling
-- **Azure SDK** (`azure-identity`, `requests`) for file upload to Azure Lakehouse
 
 ---
 
@@ -40,11 +37,10 @@ This app uses **CSV** for data storage and provides a basic command-line interfa
 ```
 personal-finance-tracker/
 │
-├── main.py              # Main application file
-├── data_entry.py        # User input validation functions
-├── finance_data.csv     # CSV file to store transactions
-├── upload_to_fabric.py  # Script to upload data to Azure Lakehouse
-└── README.md            # Project documentation
+├── main.py                # Main application file
+├── data_entry.py          # User input validation functions
+├── finance_data.csv       # CSV file to store transactions
+└── README.md              # Project documentation
 ```
 
 ---
@@ -60,10 +56,10 @@ cd personal-finance-tracker
 
 ### 2. Install Dependencies
 
-All dependencies are standard Python libraries. However, make sure you have `pandas`, `matplotlib`, and `requests` etc installed from requirements.txt file:
+All dependencies are standard Python libraries. However, make sure you have `pandas` and `matplotlib` installed:
 
 ```bash
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 ### 3. Run the Application
@@ -147,36 +143,91 @@ This project is licensed under the MIT License. You’re free to use, modify, an
 
 ---
 
-## 📤 Upload Data to Azure Lakehouse
+## 🧑‍💻 Uploading and Using Data on Microsoft Fabric
 
-The `upload_to_fabric.py` script allows you to upload your CSV data to an Azure Lakehouse for advanced analysis.
+### 1. Go to Microsoft Fabric
 
-### 1. Update the script with your Lakehouse URL
+- Open your browser and go to: [Microsoft Fabric](https://app.fabric.microsoft.com)
+- Sign in using your Microsoft or organizational account.
 
-In the `upload_to_fabric.py` file, set the `lakehouse_url` to point to your Azure Lakehouse and adjust the local file path (`local_file`) if needed.
+### 2. Create a Workspace (or pick an existing one)
 
-```python
-lakehouse_url = "https://onelake.dfs.fabric.microsoft.com/YourWorkspace.YourLakehouse.Lakehouse/files/finance_data.csv"
-local_file = "./finance_data.csv"  # adjust path if needed
-```
+- On the left sidebar, click “Workspaces”.
+- Click “New workspace” (top-right).
+- Name it something like: **Personal Finance Tracker**
+- Click “Create”
 
-### 2. Run the Script
+### Make sure this workspace is assigned to a Fabric Capacity:
 
-```bash
-python upload_to_fabric.py
-```
+- In workspace settings, under **“Premium / Fabric capacity”**, toggle it to **On**.
 
-This will upload the data to Azure Lakehouse for further analysis and visualization in a notebook.
+### 3. Create a Lakehouse
+
+- Inside the workspace, click **New** > **Lakehouse**
+- Give it a name: **FinanceLakehouse**
+- Click **Create**
+
+This sets up the data storage environment where your CSV will live.
+
+### 4. Upload `finance_data.csv` to the Lakehouse
+
+- After creating the Lakehouse, it opens the Lakehouse view.
+- You’ll see **“Files”** and **“Tables”** tabs.
+- Click the **Files** tab.
+- Click **Upload → Upload files**.
+- Select your `finance_data.csv` file from your local system.
+- Confirm the upload.
+
+✅ **Done!** You’ve now uploaded the CSV to your Lakehouse.
+
+### Optional: Convert CSV to a Table (Recommended)
+
+To use your data in reports, it’s best to promote it to a table:
+
+- In **Files**, right-click your `finance_data.csv`.
+- Choose **“Create table”**.
+- Fabric will infer headers and create a SQL-compatible table from your CSV.
+
+You can now:
+
+- Use Power BI to build reports from this table.
+- Query the table in Fabric notebooks.
+- Set refresh schedules later via pipelines or Dataflows.
 
 ---
 
-## 🧑‍💻 Further Analysis in Azure Notebook
+## 📤 Upload to OneLake via Python Script
 
-Once the data is uploaded to the Lakehouse, you can use **Azure Synapse Analytics** or **Azure Data Explorer** to run analytics on your data. Follow these steps:
+You can also upload your `finance_data.csv` file directly to OneLake using the following script.
 
-1. Open your Lakehouse in **Azure Synapse Studio** or **Azure Data Explorer**.
-2. Create a new notebook.
-3. Load the `finance_data.csv` file from the Lakehouse.
-4. Perform your desired analysis using SQL, Spark, or Python-based notebooks.
+```python
+import os
+import requests
+from azure.identity import InteractiveBrowserCredential
 
-For example, you can analyze spending trends, categorize expenses, or create advanced visualizations using Python and libraries like `pandas`, `matplotlib`, and `seaborn`.
+# Change these
+lakehouse_url = "https://onelake.dfs.fabric.microsoft.com/YourWorkspace.YourLakehouse.Lakehouse/files/finance_data.csv"
+local_file = "./finance_data.csv"  # adjust path if needed
+
+# Authenticate (this opens a browser window for login)
+credential = InteractiveBrowserCredential()
+token = credential.get_token("https://storage.azure.com/.default").token
+
+# Upload
+headers = {
+    "Authorization": f"Bearer {token}",
+    "x-ms-blob-type": "BlockBlob"
+}
+
+with open(local_file, "rb") as f:
+    response = requests.put(lakehouse_url, data=f, headers=headers)
+
+if response.status_code in [200, 201]:
+    print("✅ Upload successful!")
+else:
+    print(f"❌ Upload failed: {response.status_code} — {response.text}")
+```
+
+This script will authenticate via your Microsoft account, and then upload the `finance_data.csv` file to OneLake.
+
+---
