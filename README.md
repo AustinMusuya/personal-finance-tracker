@@ -60,10 +60,10 @@ cd personal-finance-tracker
 
 ### 2. Install Dependencies
 
-All dependencies are standard Python libraries. However, make sure you have `pandas`, `matplotlib`, and `requests` installed:
+All dependencies are standard Python libraries. However, make sure you have `pandas`, `matplotlib`, and `requests` etc installed from requirements.txt file:
 
 ```bash
-pip install pandas matplotlib requests azure-identity
+pip install requirements.txt
 ```
 
 ### 3. Run the Application
