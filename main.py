@@ -96,12 +96,32 @@ def plot_transactions(df):
     plt.show()
 
 
+def plot_transactions_summary(df):
+    df.set_index('date', inplace=True)
+
+    expense_df = df[df['category'] == "Expense"].resample(
+        'D').sum().reindex(df.index, fill_value=0)
+
+    # Sort by date
+    expense_df = expense_df.sort_values("date")
+
+    # Group expenses
+    expense_summary = expense_df.groupby("description")["amount"].sum()
+
+    plt.figure(figsize=(8, 8))
+    expense_summary.plot.pie(autopct="%1.1f%%", startangle=140)
+    plt.title("Expense Breakdown by Description")
+    plt.ylabel("")
+    plt.show()
+
+
 def main():
     while True:
         print("\n1. Add a new transaction")
         print("2. View transactions and a summary within a date range")
-        print("3. Exit")
-        choice = input("Enter your choice (1-3): ")
+        print("3. View expense summary within a date range")
+        print("4. Exit")
+        choice = input("Enter your choice (1-4): ")
 
         if choice == '1':
             add()
@@ -112,6 +132,12 @@ def main():
             if input('Do you want to see a plot? (y/n): ').lower() == 'y':
                 plot_transactions(df)
         elif choice == '3':
+            start_date = get_date("Enter the start date (dd/mm/yyyy): ")
+            end_date = get_date("Enter the end date (dd/mm/yyyy): ")
+            df = CSV.get_transactions(start_date, end_date)
+            if input('Do you want to see a plot? (y/n): ').lower() == 'y':
+                plot_transactions_summary(df)
+        elif choice == '4':
             print('Exiting....')
             break
         else:
