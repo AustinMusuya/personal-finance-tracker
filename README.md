@@ -1,6 +1,6 @@
-# 💰 Personal Finance Tracker
+# 💰 Personal Finance Tracker CLI
 
-This is a simple **Personal Finance Tracker** built using Python. It allows users to:
+This is a simple command-line tool, **Personal Finance Tracker** built using Python. It allows users to:
 
 - Record income and expense transactions.
 - View summaries within a selected date range.
