@@ -5,8 +5,9 @@ This is a simple **Personal Finance Tracker** built using Python. It allows user
 - Record income and expense transactions.
 - View summaries within a selected date range.
 - Visualize financial trends over time using line plots.
+- Upload financial data to **Azure Lakehouse** for advanced analysis and reporting.
 
-This app uses CSV for data storage and provides a basic command-line interface (CLI).
+This app uses **CSV** for data storage and provides a basic command-line interface (CLI).
 
 ---
 
@@ -20,6 +21,7 @@ This app uses CSV for data storage and provides a basic command-line interface (
   - Net Savings
 - ✅ Line plot visualization of income and expense over time
 - ✅ Stores data in a CSV file for easy access and portability
+- ✅ Uploads financial data to **Azure Lakehouse** for advanced analysis
 
 ---
 
@@ -29,6 +31,7 @@ This app uses CSV for data storage and provides a basic command-line interface (
 - **Pandas** for data manipulation
 - **Matplotlib** for visualization
 - **CSV** module for file handling
+- **Azure SDK** (`azure-identity`, `requests`) for file upload to Azure Lakehouse
 
 ---
 
@@ -37,10 +40,11 @@ This app uses CSV for data storage and provides a basic command-line interface (
 ```
 personal-finance-tracker/
 │
-├── main.py        # Main application file
-├── data_entry.py             # User input validation functions
-├── finance_data.csv          # CSV file to store transactions
-└── README.md                 # Project documentation
+├── main.py              # Main application file
+├── data_entry.py        # User input validation functions
+├── finance_data.csv     # CSV file to store transactions
+├── upload_to_fabric.py  # Script to upload data to Azure Lakehouse
+└── README.md            # Project documentation
 ```
 
 ---
@@ -56,10 +60,10 @@ cd personal-finance-tracker
 
 ### 2. Install Dependencies
 
-All dependencies are standard Python libraries. However, make sure you have `pandas` and `matplotlib` installed:
+All dependencies are standard Python libraries. However, make sure you have `pandas`, `matplotlib`, and `requests` installed:
 
 ```bash
-pip install requirements.txt
+pip install pandas matplotlib requests azure-identity
 ```
 
 ### 3. Run the Application
@@ -87,9 +91,16 @@ python main.py
 3. A table of filtered transactions and summary is shown.
 4. Optionally, visualize income/expenses over time using a line chart.
 
+### 📊 View Expense and Summary
+
+1. Choose option `3` in the menu.
+2. Enter the start and end dates in `dd/mm/yyyy` format.
+3. A table of filtered transactions and summary is shown.
+4. Optionally, visualize income/expenses over time using a pie chart.
+
 ### ❌ Exit
 
-- Choose option `3` to exit the program.
+- Choose option `4` to exit the program.
 
 ---
 
@@ -133,3 +144,39 @@ A helpful visual to monitor your spending/saving habits!
 ## 📃 License
 
 This project is licensed under the MIT License. You’re free to use, modify, and distribute it as you like.
+
+---
+
+## 📤 Upload Data to Azure Lakehouse
+
+The `upload_to_fabric.py` script allows you to upload your CSV data to an Azure Lakehouse for advanced analysis.
+
+### 1. Update the script with your Lakehouse URL
+
+In the `upload_to_fabric.py` file, set the `lakehouse_url` to point to your Azure Lakehouse and adjust the local file path (`local_file`) if needed.
+
+```python
+lakehouse_url = "https://onelake.dfs.fabric.microsoft.com/YourWorkspace.YourLakehouse.Lakehouse/files/finance_data.csv"
+local_file = "./finance_data.csv"  # adjust path if needed
+```
+
+### 2. Run the Script
+
+```bash
+python upload_to_fabric.py
+```
+
+This will upload the data to Azure Lakehouse for further analysis and visualization in a notebook.
+
+---
+
+## 🧑‍💻 Further Analysis in Azure Notebook
+
+Once the data is uploaded to the Lakehouse, you can use **Azure Synapse Analytics** or **Azure Data Explorer** to run analytics on your data. Follow these steps:
+
+1. Open your Lakehouse in **Azure Synapse Studio** or **Azure Data Explorer**.
+2. Create a new notebook.
+3. Load the `finance_data.csv` file from the Lakehouse.
+4. Perform your desired analysis using SQL, Spark, or Python-based notebooks.
+
+For example, you can analyze spending trends, categorize expenses, or create advanced visualizations using Python and libraries like `pandas`, `matplotlib`, and `seaborn`.
